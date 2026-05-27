@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a3508 0%, #2d5016 30%, #4a7c23 70%, #d4a574 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="25" cy="25" r="1" fill="rgba(212,165,116,0.1)"/><circle cx="75" cy="45" r="0.8" fill="rgba(212,165,116,0.1)"/><circle cx="45" cy="75" r="1.2" fill="rgba(212,165,116,0.1)"/><circle cx="65" cy="15" r="0.6" fill="rgba(212,165,116,0.1)"/></svg>') repeat;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1a3508 0%, #2d5016 50%, #3d6b1a 100%);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.4);
+            color: white;
+            padding: 18px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 100;
+            border-bottom: 4px solid #d4a574;
+        }
+
+        .navbar::after {
+            content: '🌍 Safari Guide Portal 🦁';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            opacity: 0.3;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            z-index: 10;
+            position: relative;
+        }
+
+        .navbar a {
+            color: #f4f1e8;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 30px;
+            transition: all 0.4s ease;
+            font-weight: 500;
+            font-size: 15px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar a::before {
+            transition: all 0.3s ease;
+        }
+
+        .navbar a[href*="schedule"]::before {
+            content: '📅';
+            font-size: 16px;
+        }
+
+        .navbar a[href*="profile"]::before {
+            content: '🎯';
+            font-size: 16px;
+        }
+
+        .navbar a::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 165, 116, 0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .navbar a:hover::after {
+            left: 100%;
+        }
+
+        .navbar a:hover {
+            background: linear-gradient(135deg, rgba(212, 165, 116, 0.2), rgba(244, 212, 63, 0.2));
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(212, 165, 116, 0.3);
+        }
+
+        .logout-form {
+            z-index: 10;
+            position: relative;
+        }
+
+        .logout-form button {
+            background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+            color: white;
+            padding: 12px 22px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(192, 57, 43, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-form button::before {
+            content: '🚪';
+            font-size: 16px;
+        }
+
+        .logout-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(192, 57, 43, 0.5);
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .main-content {
+            padding: 40px 35px;
+            max-width: 750px;
+            margin: 50px auto;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(244, 241, 232, 0.95) 100%);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 10;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(212, 165, 116, 0.4);
+        }
+
+        .main-content::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(45deg, #d4a574, #2d5016, #d4a574, #4a7c23);
+            border-radius: 28px;
+            z-index: -1;
+            opacity: 0.4;
+        }
+
+        h1 {
+            color: #1a3508;
+            font-size: 2.8em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1::before {
+            content: '🎯';
+            font-size: 0.9em;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
+        }
+
+        h1::after {
+            content: 'Guide Dashboard';
+            font-size: 0.4em;
+            color: #d4a574;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #1a3508;
+            font-weight: 600;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        label:has(+ input[readonly]) {
+            color: #6b4423;
+        }
+
+        label:has(+ input[readonly])::after {
+            content: '(Read-only)';
+            font-size: 0.8em;
+            color: #d4a574;
+            font-weight: 400;
+            margin-left: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 15px;
+            border: 2px solid #d4a574;
+            background: linear-gradient(135deg, #fff 0%, #f9f7f0 100%);
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.4s ease;
+            box-shadow: inset 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        input[readonly] {
+            background: linear-gradient(135deg, #f5f3ed 0%, #ede8db 100%);
+            color: #6b4423;
+            border-color: #c9b991;
+            cursor: not-allowed;
+            font-weight: 500;
+        }
+
+        input:not([readonly]):focus {
+            border-color: #1a3508;
+            box-shadow: 0 0 0 4px rgba(26, 53, 8, 0.15), inset 0 3px 8px rgba(0,0,0,0.1);
+            outline: none;
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #fff 0%, #f4f1e8 100%);
+        }
+
+        button[type="submit"] {
+            padding: 18px 35px;
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #1a3508 0%, #2d5016 50%, #4a7c23 100%);
+            color: white;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 25px rgba(26, 53, 8, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button[type="submit"]::before {
+            content: '💾';
+            font-size: 20px;
+        }
+
+        button[type="submit"]::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.6s ease;
+        }
+
+        button[type="submit"]:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(26, 53, 8, 0.5);
+            background: linear-gradient(135deg, #4a7c23 0%, #2d5016 50%, #1a3508 100%);
+        }
+
+        .success-message {
+            color: #1a3508;
+            background: linear-gradient(135deg, #d4f4d4 0%, #c8e6c8 100%);
+            border: 2px solid #4a7c23;
+            padding: 18px 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: successSlide 0.6s ease;
+            box-shadow: 0 5px 15px rgba(74, 124, 35, 0.2);
+        }
+
+        .success-message::before {
+            content: '✅';
+            font-size: 24px;
+        }
+
+        /* Field-specific icons */
+        .form-group:has(input[readonly][value*="name"]) label::before,
+        .form-group:has(input[readonly]) label::before {
+            content: '👤';
+            font-size: 18px;
+        }
+
+        .form-group:has(input[readonly][value*="license"]) label::before,
+        .form-group:has(input[name*="license"]) label::before {
+            content: '🎫';
+            font-size: 18px;
+        }
+
+        .form-group:has(input[name*="contact"]) label::before {
+            content: '📱';
+            font-size: 18px;
+        }
+
+        @keyframes successSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-30px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Safari wildlife decorations */
+        .wildlife-decoration {
+            position: fixed;
+            font-size: 80px;
+            opacity: 0.08;
+            z-index: 2;
+            pointer-events: none;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .wildlife-decoration:nth-child(1) {
+            top: 15%;
+            left: 8%;
+            animation-delay: 0s;
+        }
+
+        .wildlife-decoration:nth-child(2) {
+            top: 60%;
+            right: 12%;
+            animation-delay: 2s;
+        }
+
+        .wildlife-decoration:nth-child(3) {
+            bottom: 25%;
+            left: 15%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 20px;
+                padding: 25px 20px;
+            }
+
+            .navbar::after {
+                display: none;
+            }
+
+            .navbar-left {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .main-content {
+                margin: 30px 15px;
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2.2em;
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            h1::after {
+                margin-left: 0;
+            }
+
+            .wildlife-decoration {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="wildlife-decoration">🦒</div>
+<div class="wildlife-decoration">🐘</div>
+<div class="wildlife-decoration">🦁</div>
+
+<div class="navbar">
+    <div class="navbar-left">
+        <a th:href="@{/guide/schedule}">My Schedule</a>
+        <a th:href="@{/guide/profile}">My Profile</a>
+    </div>
+    <form class="logout-form" th:action="@{/logout}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+</div>
+
+<div class="main-content">
+    <h1>My Profile</h1>
+    <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
+    <form th:action="@{/guide/profile}" method="post">
+        <input type="hidden" name="guideId" th:value="${guide.id}" />
+        <div class="form-group">
+            <label>Name:</label>
+            <input type="text" th:value="${guide.name}" readonly />
+        </div>
+        <div class="form-group">
+            <label>License Number:</label>
+            <input type="text" th:value="${guide.licenseNumber}" readonly />
+        </div>
+        <div class="form-group">
+            <label for="contactNumber">Contact Number (Editable):</label>
+            <input type="text" id="contactNumber" name="contactNumber" th:value="${guide.contactNumber}" required />
+        </div>
+        <button type="submit">Update Profile</button>
+    </form>
+</div>
+</body>
+</html>

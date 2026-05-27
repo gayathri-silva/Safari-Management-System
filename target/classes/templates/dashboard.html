@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Explorer Dashboard - Safari Adventures</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c59 50%, #8fbc8f 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+        }
+
+        /* Safari-themed navigation bar */
+        .navbar {
+            background: linear-gradient(90deg, #1a3a0f, #2d5016);
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid #d4a574;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .navbar-brand {
+            color: #f4f1de;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-brand i {
+            color: #d4a574;
+            font-size: 2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #f4f1de;
+            text-decoration: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .nav-links a:hover {
+            background: rgba(212, 165, 116, 0.2);
+            transform: translateY(-2px);
+            color: #d4a574;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .navbar-user {
+            color: #d4a574;
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logout-form button {
+            background: linear-gradient(45deg, #dc143c, #ff6b6b);
+            color: white;
+            padding: 0.7rem 1.2rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logout-form button:hover {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+        }
+
+        /* Main content */
+        .main-content {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-title {
+            font-size: 3.5rem;
+            color: #f4f1de;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .welcome-card {
+            background: rgba(244, 241, 222, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .welcome-message {
+            font-size: 1.4rem;
+            color: #2d5016;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .welcome-description {
+            font-size: 1.1rem;
+            color: #5d4e37;
+            line-height: 1.7;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Quick actions grid */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .action-card {
+            background: rgba(244, 241, 222, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .action-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+            background: rgba(244, 241, 222, 1);
+        }
+
+        .action-card i {
+            font-size: 3.5rem;
+            margin-bottom: 1.2rem;
+            display: block;
+        }
+
+        .profile-card i { color: #8b4513; }
+        .booking-card i { color: #2d5016; }
+        .history-card i { color: #d2691e; }
+
+        .action-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #2d5016;
+            font-weight: bold;
+        }
+
+        .action-card p {
+            color: #5d4e37;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Adventure stats section */
+        .adventure-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+
+        .stat-card {
+            background: rgba(212, 165, 116, 0.1);
+            border: 2px solid rgba(212, 165, 116, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .stat-card i {
+            font-size: 2.5rem;
+            margin-bottom: 0.8rem;
+            color: #d4a574;
+            display: block;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2d5016;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            color: #5d4e37;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Inspiring quotes section */
+        .inspiration-section {
+            background: rgba(45, 80, 22, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 3rem 0;
+            text-align: center;
+            border: 1px solid rgba(45, 80, 22, 0.2);
+        }
+
+        .inspiration-quote {
+            font-size: 1.3rem;
+            font-style: italic;
+            color: #2d5016;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .inspiration-author {
+            color: #8b4513;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        /* Safari-themed decorative elements */
+        .safari-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.05;
+            background-image:
+                    radial-gradient(circle at 20% 80%, rgba(212, 165, 116, 0.3) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(139, 69, 19, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: center;
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .navbar-left {
+                justify-content: center;
+            }
+
+            .nav-links {
+                justify-content: center;
+            }
+
+            .dashboard-title {
+                font-size: 2.5rem;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .welcome-card {
+                padding: 1.5rem;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .adventure-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-title {
+                font-size: 2rem;
+            }
+
+            .adventure-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .main-content {
+                padding: 0 1rem;
+            }
+        }
+
+        /* Animation for page load */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .main-content > * {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .action-card:nth-child(1) { animation-delay: 0.1s; }
+        .action-card:nth-child(2) { animation-delay: 0.2s; }
+        .action-card:nth-child(3) { animation-delay: 0.3s; }
+
+        /* Floating animation for icons */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .action-card i {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .action-card:nth-child(1) i { animation-delay: 0s; }
+        .action-card:nth-child(2) i { animation-delay: 1s; }
+        .action-card:nth-child(3) i { animation-delay: 2s; }
+    </style>
+</head>
+<body>
+
+<div class="safari-pattern"></div>
+
+<div class="navbar">
+    <div class="navbar-left">
+        <a class="navbar-brand" th:href="@{/dashboard}">
+            <i class="fas fa-binoculars"></i>
+            Safari Adventures
+        </a>
+        <div class="nav-links">
+            <a th:href="@{/tourist/profile}">
+                <i class="fas fa-user-circle"></i>
+                My Profile
+            </a>
+            <a th:href="@{/tourist/booking}">
+                <i class="fas fa-plus-circle"></i>
+                New Expedition
+            </a>
+            <a th:href="@{/tourist/bookings}">
+                <i class="fas fa-history"></i>
+                Adventure Log
+            </a>
+        </div>
+    </div>
+
+    <div class="navbar-right">
+        <div class="navbar-user">
+            <i class="fas fa-compass"></i>
+            Welcome, <span th:text="${username}">Explorer</span>!
+        </div>
+        <form class="logout-form" th:action="@{/logout}" method="post">
+            <button type="submit">
+                <i class="fas fa-sign-out-alt"></i>
+                End Journey
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">
+            <i class="fas fa-mountain"></i>
+            Explorer Base Camp
+        </h1>
+    </div>
+
+    <div class="welcome-card">
+        <h2 class="welcome-message">
+            🦁 Ready for your next wild adventure?
+        </h2>
+        <p class="welcome-description">
+            Welcome to your personal safari command center! From this base camp, you can plan new expeditions,
+            track your adventure history, manage your explorer profile, and prepare for unforgettable wildlife encounters.
+            Your next great discovery awaits in the African wilderness!
+        </p>
+    </div>
+
+    <div class="adventure-stats">
+        <div class="stat-card">
+            <i class="fas fa-calendar-check"></i>
+            <div class="stat-number">0</div>
+            <div class="stat-label">Active Expeditions</div>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-map-marked-alt"></i>
+            <div class="stat-number">0</div>
+            <div class="stat-label">Destinations Explored</div>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-binoculars"></i>
+            <div class="stat-number">0</div>
+            <div class="stat-label">Wildlife Spotted</div>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-star"></i>
+            <div class="stat-number">0</div>
+            <div class="stat-label">Adventure Rating</div>
+        </div>
+    </div>
+
+    <div class="quick-actions">
+        <a th:href="@{/tourist/profile}" class="action-card profile-card">
+            <i class="fas fa-user-astronaut"></i>
+            <h3>Explorer Profile</h3>
+            <p>Manage your adventurer details, preferences, and contact information. Update your safari interests and experience level.</p>
+        </a>
+
+        <a th:href="@{/tourist/booking}" class="action-card booking-card">
+            <i class="fas fa-route"></i>
+            <h3>Plan New Expedition</h3>
+            <p>Book your next thrilling safari adventure! Choose from various wildlife destinations and expedition packages.</p>
+        </a>
+
+        <a th:href="@{/tourist/bookings}" class="action-card history-card">
+            <i class="fas fa-book-open"></i>
+            <h3>Adventure Chronicle</h3>
+            <p>Review your past expeditions, track booking status, and relive your greatest safari moments and discoveries.</p>
+        </a>
+    </div>
+
+    <div class="inspiration-section">
+        <div class="inspiration-quote">
+            "The wilderness holds answers to more questions than we have yet learned to ask."
+        </div>
+        <div class="inspiration-author">
+            — Nancy Newhall, Nature Photographer
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add some interactive enhancements
+        const statCards = document.querySelectorAll('.stat-card');
+
+        // Animate numbers on scroll (placeholder for future dynamic data)
+        const animateStats = () => {
+            statCards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        };
+
+        // Enhanced hover effects for action cards
+        const actionCards = document.querySelectorAll('.action-card');
+        actionCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(-8px) scale(1)';
+            });
+        });
+
+        // Initialize animations
+        animateStats();
+
+        // Add a subtle parallax effect to the background
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const pattern = document.querySelector('.safari-pattern');
+            pattern.style.transform = `translateY(${scrolled * 0.1}px)`;
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Safari Vehicle Form</title>
+    <link rel="stylesheet" th:href="@{/css/admin-style.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --safari-primary: #2d5016;
+            --safari-secondary: #4a7c59;
+            --safari-accent: #8b4513;
+            --safari-light: #f4f1e8;
+            --safari-sand: #deb887;
+            --safari-dark: #1a2f0a;
+            --safari-success: #228b22;
+            --safari-warning: #cd853f;
+            --safari-hover: #3d6b1f;
+            --safari-error: #8b4513;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f4f1e8 0%, #e8dcc6 100%);
+            color: var(--safari-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            margin-left: 0;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            min-height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--safari-primary) 0%, var(--safari-secondary) 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(45, 80, 22, 0.3);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: rotate(45deg);
+        }
+
+        .page-header::after {
+            content: '🚙';
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 3rem;
+            opacity: 0.2;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(45, 80, 22, 0.1);
+            width: 100%;
+            max-width: 700px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--safari-primary), var(--safari-accent), var(--safari-secondary));
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid rgba(45, 80, 22, 0.1);
+        }
+
+        .form-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--safari-accent), var(--safari-warning));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2rem;
+            color: white;
+            box-shadow: 0 10px 30px rgba(139, 69, 19, 0.3);
+        }
+
+        .form-title {
+            font-size: 1.8rem;
+            color: var(--safari-primary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-description {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            color: var(--safari-primary);
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 2px solid rgba(45, 80, 22, 0.2);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(244, 241, 232, 0.3);
+            color: var(--safari-dark);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--safari-secondary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(74, 124, 89, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-group input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .form-group input[type="number"]::-webkit-outer-spin-button,
+        .form-group input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--safari-accent);
+            font-size: 1.1rem;
+            pointer-events: none;
+            margin-top: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .capacity-input {
+            position: relative;
+        }
+
+        .capacity-helper {
+            position: absolute;
+            right: 3rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--safari-accent);
+            font-size: 0.85rem;
+            pointer-events: none;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--safari-primary) 0%, var(--safari-secondary) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 1.2rem 3rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            margin-top: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(45, 80, 22, 0.3);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 5px 15px rgba(45, 80, 22, 0.3);
+        }
+
+        .btn i {
+            margin-right: 0.5rem;
+        }
+
+        .vehicle-preview {
+            background: rgba(74, 124, 89, 0.05);
+            border: 2px dashed rgba(74, 124, 89, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .vehicle-preview h3 {
+            color: var(--safari-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .vehicle-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .detail-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: var(--safari-primary);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-secondary {
+            background: rgba(139, 69, 19, 0.1);
+            color: var(--safari-accent);
+            border: 2px solid var(--safari-accent);
+        }
+
+        .btn-secondary:hover {
+            background: var(--safari-accent);
+            color: white;
+        }
+
+        .validation-message {
+            color: var(--safari-error);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .form-group.error input {
+            border-color: var(--safari-error);
+            background: rgba(139, 69, 19, 0.05);
+        }
+
+        .form-group.error .validation-message {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .page-header {
+                padding: 1.5rem 1rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .form-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .vehicle-details {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-up {
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{admin/fragments :: navbar}"></div>
+
+<div class="main-content">
+    <!-- Page Header -->
+    <div class="page-header fade-in">
+        <h1 class="page-title">
+            <i class="fas fa-truck"></i>
+            <span th:text="${vehicle.id == null} ? 'Add New Safari Vehicle' : 'Edit Safari Vehicle'">Add Safari Vehicle</span>
+        </h1>
+        <p class="page-subtitle">Manage your safari fleet for the ultimate adventure experience</p>
+    </div>
+
+    <!-- Form Container -->
+    <div class="form-container slide-up">
+        <div class="form-header">
+            <div class="form-icon">
+                <i class="fas fa-jeep"></i>
+            </div>
+            <h2 class="form-title" th:text="${vehicle.id == null} ? 'Register New Vehicle' : 'Update Vehicle Details'">Register New Vehicle</h2>
+            <p class="form-description">Enter the details for your safari vehicle to ensure safe and memorable adventures</p>
+        </div>
+
+        <form th:action="@{/admin/vehicles/save}" th:object="${vehicle}" method="post" id="vehicleForm">
+            <input type="hidden" th:field="*{id}" />
+
+            <!-- Vehicle Preview -->
+            <div class="vehicle-preview" id="vehiclePreview" style="display: none;">
+                <h3><i class="fas fa-eye"></i> Vehicle Preview</h3>
+                <div class="vehicle-details">
+                    <div class="detail-item">
+                        <div class="detail-label">Make & Model</div>
+                        <div class="detail-value" id="preview-make-model">-</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">License Plate</div>
+                        <div class="detail-value" id="preview-license">-</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Capacity</div>
+                        <div class="detail-value" id="preview-capacity">- passengers</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="make">
+                        <i class="fas fa-industry"></i>
+                        Vehicle Make
+                    </label>
+                    <input type="text" id="make" th:field="*{make}" required placeholder="e.g., Toyota, Land Rover" />
+                    <i class="fas fa-car input-icon"></i>
+                    <div class="validation-message">Please enter the vehicle make</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="model">
+                        <i class="fas fa-tags"></i>
+                        Vehicle Model
+                    </label>
+                    <input type="text" id="model" th:field="*{model}" required placeholder="e.g., Land Cruiser, Defender" />
+                    <i class="fas fa-id-card input-icon"></i>
+                    <div class="validation-message">Please enter the vehicle model</div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="licensePlate">
+                        <i class="fas fa-certificate"></i>
+                        License Plate
+                    </label>
+                    <input type="text" id="licensePlate" th:field="*{licensePlate}" required placeholder="e.g., SAF-1234" style="text-transform: uppercase;" />
+                    <i class="fas fa-clipboard-list input-icon"></i>
+                    <div class="validation-message">Please enter the license plate number</div>
+                </div>
+
+                <div class="form-group capacity-input">
+                    <label for="capacity">
+                        <i class="fas fa-users"></i>
+                        Passenger Capacity
+                    </label>
+                    <input type="number" id="capacity" th:field="*{capacity}" required min="1" max="50" placeholder="8" />
+                    <span class="capacity-helper">guests</span>
+                    <i class="fas fa-user-friends input-icon"></i>
+                    <div class="validation-message">Please enter passenger capacity (1-50)</div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="history.back()">
+                    <i class="fas fa-arrow-left"></i>
+                    Cancel
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    <span th:text="${vehicle.id == null} ? 'Add Vehicle to Fleet' : 'Update Vehicle'">Add Vehicle to Fleet</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('vehicleForm');
+        const preview = document.getElementById('vehiclePreview');
+        const makeInput = document.getElementById('make');
+        const modelInput = document.getElementById('model');
+        const licensePlateInput = document.getElementById('licensePlate');
+        const capacityInput = document.getElementById('capacity');
+
+        // Real-time preview update
+        function updatePreview() {
+            const make = makeInput.value.trim();
+            const model = modelInput.value.trim();
+            const license = licensePlateInput.value.trim().toUpperCase();
+            const capacity = capacityInput.value;
+
+            if (make || model || license || capacity) {
+                preview.style.display = 'block';
+                document.getElementById('preview-make-model').textContent =
+                    make && model ? ${make} ${model} : (make || model || '-');
+                document.getElementById('preview-license').textContent = license || '-';
+                document.getElementById('preview-capacity').textContent =
+                    capacity ? ${capacity} passengers : '- passengers';
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        // Add event listeners for real-time preview
+        [makeInput, modelInput, licensePlateInput, capacityInput].forEach(input => {
+            input.addEventListener('input', updatePreview);
+        });
+
+        // Auto-uppercase license plate
+        licensePlateInput.addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+
+        // Form validation
+        function validateField(field, condition, message) {
+            const formGroup = field.parentElement;
+            const messageEl = formGroup.querySelector('.validation-message');
+
+            if (condition) {
+                formGroup.classList.remove('error');
+                return true;
+            } else {
+                formGroup.classList.add('error');
+                messageEl.textContent = message;
+                return false;
+            }
+        }
+
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+
+            // Validate make
+            isValid &= validateField(
+                makeInput,
+                makeInput.value.trim().length >= 2,
+                'Vehicle make must be at least 2 characters'
+            );
+
+            // Validate model
+            isValid &= validateField(
+                modelInput,
+                modelInput.value.trim().length >= 2,
+                'Vehicle model must be at least 2 characters'
+            );
+
+            // Validate license plate
+            isValid &= validateField(
+                licensePlateInput,
+                /^[A-Z0-9-\s]{3,10}$/.test(licensePlateInput.value.trim()),
+                'License plate must be 3-10 characters (letters, numbers, hyphens)'
+            );
+
+            // Validate capacity
+            const capacity = parseInt(capacityInput.value);
+            isValid &= validateField(
+                capacityInput,
+                capacity >= 1 && capacity <= 50,
+                'Capacity must be between 1 and 50 passengers'
+            );
+
+            if (!isValid) {
+                e.preventDefault();
+                // Scroll to first error
+                const firstError = document.querySelector('.form-group.error');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
+
+        // Remove error state on input
+        document.querySelectorAll('.form-group input').forEach(input => {
+            input.addEventListener('input', function() {
+                this.parentElement.classList.remove('error');
+            });
+        });
+
+        // Initialize preview if editing existing vehicle
+        updatePreview();
+    });
+</script>
+</body>
+</html>

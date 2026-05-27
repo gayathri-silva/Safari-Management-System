@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        :root {
+            --safari-green: #2d5016;
+            --safari-light-green: #4a7c59;
+            --safari-brown: #8b4513;
+            --safari-sand: #f4e4bc;
+            --safari-gold: #daa520;
+            --earth-tone: #8b6914;
+            --wilderness-dark: #1e3a1a;
+            --nature-light: #e8f5e8;
+            --adventure-orange: #cc7722;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--safari-green) 0%, var(--wilderness-dark) 100%);
+            overflow: hidden;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(45, 80, 22, 0.3);
+            position: relative;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .navbar::before {
+            content: '🌿';
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5em;
+            opacity: 0.7;
+            z-index: 1;
+        }
+
+        .nav-main {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .navbar-brand {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-left: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            color: var(--safari-sand);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand::after {
+            content: ' 🦁';
+            opacity: 0.8;
+        }
+
+        .navbar-brand:hover {
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .navbar a:not(.navbar-brand) {
+            color: var(--safari-sand);
+            text-decoration: none;
+            padding: 10px 16px;
+            font-size: 1em;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .navbar a:not(.navbar-brand):hover {
+            background: var(--safari-light-green);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(74, 124, 89, 0.4);
+        }
+
+        /* Safari-themed icons for each navigation item */
+        .navbar a[href*="bookings"]::before { content: '🎪'; }
+        .navbar a[href*="tourists"]::before { content: '🧳'; }
+        .navbar a[href*="feedback"]::before { content: '💬'; }
+        .navbar a[href*="guides"]::before { content: '🎯'; }
+        .navbar a[href*="vehicles"]::before { content: '🚙'; }
+        .navbar a[href*="reports"]::before { content: '📊'; }
+
+        .logout-form {
+            margin-left: auto;
+        }
+
+        .logout-form button {
+            background: linear-gradient(135deg, var(--adventure-orange) 0%, #b8681e 100%);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(204, 119, 34, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-form button::before {
+            content: '🚪';
+        }
+
+        .logout-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(204, 119, 34, 0.4);
+            background: linear-gradient(135deg, #d4851f 0%, var(--adventure-orange) 100%);
+        }
+
+        /* Enhanced mobile responsiveness */
+        @media (max-width: 1200px) {
+            .navbar {
+                padding: 16px 20px;
+            }
+
+            .navbar-brand {
+                font-size: 1.6em;
+                margin-left: 35px;
+            }
+
+            .navbar a:not(.navbar-brand) {
+                padding: 8px 14px;
+                font-size: 0.95em;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .navbar {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 20px;
+                gap: 20px;
+            }
+
+            .navbar::before {
+                display: none;
+            }
+
+            .nav-main {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .navbar-brand {
+                margin-left: 0;
+                text-align: center;
+                font-size: 1.8em;
+                padding: 10px 0;
+            }
+
+            .nav-links {
+                justify-content: center;
+                width: 100%;
+                gap: 10px;
+            }
+
+            .logout-form {
+                margin-left: 0;
+                display: flex;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                gap: 8px;
+                width: 100%;
+            }
+
+            .navbar a:not(.navbar-brand) {
+                width: 100%;
+                justify-content: center;
+                padding: 12px 20px;
+            }
+
+            .navbar-brand {
+                font-size: 1.6em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar-brand {
+                font-size: 1.4em;
+            }
+
+            .navbar a:not(.navbar-brand) {
+                font-size: 0.9em;
+                padding: 10px 16px;
+            }
+
+            .logout-form button {
+                font-size: 1em;
+                padding: 10px 18px;
+            }
+        }
+
+        /* Safari adventure theme enhancements */
+        .navbar {
+            position: relative;
+            overflow: visible;
+        }
+
+        .navbar::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg,
+            var(--safari-gold) 0%,
+            var(--safari-brown) 25%,
+            var(--safari-light-green) 50%,
+            var(--safari-brown) 75%,
+            var(--safari-gold) 100%);
+            opacity: 0.8;
+        }
+
+        /* Subtle animation for better user experience */
+        .navbar a {
+            animation: slideInFromTop 0.6s ease-out forwards;
+        }
+
+        .navbar a:nth-child(1) { animation-delay: 0.1s; }
+        .navbar a:nth-child(2) { animation-delay: 0.15s; }
+        .navbar a:nth-child(3) { animation-delay: 0.2s; }
+        .navbar a:nth-child(4) { animation-delay: 0.25s; }
+        .navbar a:nth-child(5) { animation-delay: 0.3s; }
+        .navbar a:nth-child(6) { animation-delay: 0.35s; }
+        .navbar a:nth-child(7) { animation-delay: 0.4s; }
+
+        @keyframes slideInFromTop {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logout-form button {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+<div th:fragment="navbar" class="navbar">
+    <div class="nav-main">
+        <a class="navbar-brand" th:href="@{/admin/dashboard}">Safari Admin Panel</a>
+        <div class="nav-links">
+            <a th:href="@{/admin/bookings}">Manage Bookings</a>
+            <a th:href="@{/admin/tourists}">Manage Tourists</a>
+            <a th:href="@{/admin/feedback}">Manage Feedback</a>
+            <a th:href="@{/admin/guides}">Manage Guides</a>
+            <a th:href="@{/admin/vehicles}">Manage Vehicles</a>
+            <a th:href="@{/admin/reports}">Reports</a>
+        </div>
+    </div>
+    <form class="logout-form" th:action="@{/logout}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+</div>
+</body>
+</html>

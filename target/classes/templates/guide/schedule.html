@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Schedule</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a3508 0%, #2d5016 30%, #4a7c23 70%, #d4a574 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="30" r="1" fill="rgba(212,165,116,0.1)"/><circle cx="80" cy="20" r="0.8" fill="rgba(212,165,116,0.1)"/><circle cx="60" cy="70" r="1.2" fill="rgba(212,165,116,0.1)"/><circle cx="30" cy="80" r="0.6" fill="rgba(212,165,116,0.1)"/></svg>') repeat;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1a3508 0%, #2d5016 50%, #3d6b1a 100%);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.4);
+            color: white;
+            padding: 18px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 100;
+            border-bottom: 4px solid #d4a574;
+        }
+
+        .navbar::after {
+            content: '🗓️ Schedule Manager 🌿';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            opacity: 0.3;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            z-index: 10;
+            position: relative;
+        }
+
+        .navbar a {
+            color: #f4f1e8;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 30px;
+            transition: all 0.4s ease;
+            font-weight: 500;
+            font-size: 15px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar a[href*="schedule"]::before {
+            content: '📅';
+            font-size: 16px;
+        }
+
+        .navbar a[href*="profile"]::before {
+            content: '🎯';
+            font-size: 16px;
+        }
+
+        .navbar a::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 165, 116, 0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .navbar a:hover::after {
+            left: 100%;
+        }
+
+        .navbar a:hover {
+            background: linear-gradient(135deg, rgba(212, 165, 116, 0.2), rgba(244, 212, 63, 0.2));
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(212, 165, 116, 0.3);
+        }
+
+        .welcome-message {
+            color: #f4f1e8;
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 10;
+            position: relative;
+        }
+
+        .welcome-message::before {
+            content: '👋';
+            font-size: 18px;
+        }
+
+        .logout-form {
+            z-index: 10;
+            position: relative;
+        }
+
+        .logout-form button {
+            background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+            color: white;
+            padding: 12px 22px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(192, 57, 43, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-form button::before {
+            content: '🚪';
+            font-size: 16px;
+        }
+
+        .logout-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(192, 57, 43, 0.5);
+        }
+
+        .main-content {
+            padding: 40px;
+            max-width: 1100px;
+            margin: 40px auto;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(244, 241, 232, 0.95) 100%);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 10;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(212, 165, 116, 0.4);
+        }
+
+        .main-content::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(45deg, #d4a574, #2d5016, #d4a574, #4a7c23);
+            border-radius: 28px;
+            z-index: -1;
+            opacity: 0.4;
+        }
+
+        h1 {
+            color: #1a3508;
+            font-size: 2.8em;
+            font-weight: 700;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1::before {
+            content: '🗓️';
+            font-size: 0.9em;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #fff 0%, #f9f7f0 100%);
+        }
+
+        th {
+            background: linear-gradient(135deg, #1a3508 0%, #2d5016 100%);
+            color: white;
+            padding: 20px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+
+        th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #d4a574;
+        }
+
+        td {
+            border: none;
+            border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+            padding: 20px 15px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #2d4a1a;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        tr:hover td {
+            background: linear-gradient(135deg, rgba(212, 165, 116, 0.1) 0%, rgba(244, 212, 63, 0.1) 100%);
+            transform: scale(1.01);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status styling */
+        td:nth-child(5) {
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Add icons to table headers */
+        th:nth-child(1)::before { content: '📅 '; }
+        th:nth-child(2)::before { content: '⏰ '; }
+        th:nth-child(3)::before { content: '🌳 '; }
+        th:nth-child(4)::before { content: '📱 '; }
+        th:nth-child(5)::before { content: '📊 '; }
+        th:nth-child(6)::before { content: '⚙️ '; }
+
+        .status-form {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: flex-start;
+        }
+
+        .status-form select {
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 2px solid #d4a574;
+            background: linear-gradient(135deg, #fff 0%, #f9f7f0 100%);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            color: #2d4a1a;
+            min-width: 120px;
+            transition: all 0.3s ease;
+        }
+
+        .status-form select:focus {
+            border-color: #1a3508;
+            box-shadow: 0 0 0 3px rgba(26, 53, 8, 0.1);
+            outline: none;
+        }
+
+        .status-form button {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
+            background: linear-gradient(135deg, #1a3508 0%, #2d5016 100%);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(26, 53, 8, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-form button::before {
+            content: '💾';
+            font-size: 14px;
+        }
+
+        .status-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(26, 53, 8, 0.4);
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c23 100%);
+        }
+
+        /* Empty state styling */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b4423;
+        }
+
+        .empty-state::before {
+            content: '📋';
+            font-size: 64px;
+            display: block;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        /* Safari wildlife decorations */
+        .wildlife-decoration {
+            position: fixed;
+            font-size: 70px;
+            opacity: 0.06;
+            z-index: 2;
+            pointer-events: none;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .wildlife-decoration:nth-child(1) {
+            top: 20%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .wildlife-decoration:nth-child(2) {
+            top: 65%;
+            right: 8%;
+            animation-delay: 3s;
+        }
+
+        .wildlife-decoration:nth-child(3) {
+            bottom: 15%;
+            left: 10%;
+            animation-delay: 6s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-25px) rotate(3deg); }
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                margin: 30px 20px;
+                padding: 30px 25px;
+            }
+
+            table {
+                font-size: 13px;
+            }
+
+            th, td {
+                padding: 15px 10px;
+            }
+
+            .status-form {
+                flex-direction: column;
+                gap: 8px;
+                align-items: stretch;
+            }
+
+            .status-form select,
+            .status-form button {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 20px;
+            }
+
+            .navbar::after {
+                display: none;
+            }
+
+            .navbar-left {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .welcome-message {
+                order: -1;
+                margin-bottom: 10px;
+            }
+
+            h1 {
+                font-size: 2.2em;
+                text-align: center;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .wildlife-decoration {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="wildlife-decoration">🦏</div>
+<div class="wildlife-decoration">🐆</div>
+<div class="wildlife-decoration">🦅</div>
+
+<div class="navbar">
+    <div class="navbar-left">
+        <a th:href="@{/guide/schedule}">My Schedule</a>
+        <a th:href="@{/guide/profile}">My Profile</a>
+    </div>
+    <div class="welcome-message">Welcome, <span th:text="${guideName}"></span>!</div>
+    <form class="logout-form" th:action="@{/logout}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+</div>
+
+<div class="main-content">
+    <h1>My Assigned Trips</h1>
+    <table th:unless="${#lists.isEmpty(bookings)}">
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Park</th>
+            <th>Tourist Contact</th>
+            <th>Status</th>
+            <th>Update Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="booking : ${bookings}">
+            <td th:text="${#temporals.format(booking.bookingDate, 'dd-MMM-yyyy')}"></td>
+            <td th:text="${booking.timeSlot}"></td>
+            <td th:text="${booking.nationalPark.name}"></td>
+            <td th:text="${booking.tourist.phoneNumber}"></td>
+            <td th:text="${booking.status}"></td>
+            <td>
+                <form th:action="@{/guide/schedule/update-status}" method="post" class="status-form">
+                    <input type="hidden" name="bookingId" th:value="${booking.id}" />
+                    <select name="status">
+                        <option th:each="stat : ${statuses}"
+                                th:if="${stat.name() == 'COMPLETED' or stat.name() == 'CANCELED'}"
+                                th:value="${stat}"
+                                th:text="${stat}"
+                                th:selected="${stat == booking.status}">
+                        </option>
+                    </select>
+                    <button type="submit">Update</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${#lists.isEmpty(bookings)}" class="empty-state">
+        <h2>No trips assigned yet</h2>
+        <p>Your safari schedule is currently empty. New trip assignments will appear here.</p>
+    </div>
+</div>
+
+</body>
+</html>

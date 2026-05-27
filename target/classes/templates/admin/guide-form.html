@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Guide Form</title>
+    <link rel="stylesheet" th:href="@{/css/admin-style.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c59 50%, #8fbc8f 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Safari pattern overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                    radial-gradient(circle at 20% 80%, rgba(160, 82, 45, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(34, 139, 34, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 40% 40%, rgba(218, 165, 32, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .main-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h1 {
+            color: #f4f1de;
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        h1::before {
+            content: '\f507'; /* Safari/binoculars icon */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            margin-right: 1rem;
+            color: #daa520;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-container {
+            background: rgba(244, 241, 222, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 600px;
+            box-shadow:
+                    0 20px 40px rgba(0, 0, 0, 0.3),
+                    0 0 0 1px rgba(255, 255, 255, 0.1),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(139, 69, 19, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #8b4513, #daa520, #228b22, #a0522d);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.75rem;
+            color: #2d5016;
+            font-weight: 600;
+            font-size: 1rem;
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        label::before {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: #8b4513;
+            font-size: 1.1rem;
+        }
+
+        label[for="name"]::before {
+            content: '\f406'; /* user-tie icon for guide */
+        }
+
+        label[for="contactNumber"]::before {
+            content: '\f095'; /* phone icon */
+        }
+
+        label[for="licenseNumber"]::before {
+            content: '\f2c2'; /* certificate icon */
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 2px solid #d2b48c;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            color: #2d5016;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #228b22;
+            box-shadow:
+                    0 0 0 3px rgba(34, 139, 34, 0.1),
+                    0 4px 12px rgba(34, 139, 34, 0.2);
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-1px);
+        }
+
+        input[type="text"]:hover {
+            border-color: #8b4513;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #228b22 0%, #32cd32 100%);
+            color: white;
+            padding: 1.2rem 3rem;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 6px 20px rgba(34, 139, 34, 0.3);
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .btn::before {
+            content: '\f0c7'; /* save icon */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            margin-right: 0.75rem;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(34, 139, 34, 0.4);
+            background: linear-gradient(135deg, #32cd32 0%, #228b22 100%);
+        }
+
+        .btn:hover::after {
+            left: 100%;
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Wildlife decorative elements */
+        .form-container::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            right: -50px;
+            width: 100px;
+            height: 100px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20,80 Q30,70 40,75 Q50,65 60,70 Q70,60 80,65" stroke="%23d2b48c" stroke-width="2" fill="none" opacity="0.3"/></svg>');
+            opacity: 0.3;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .form-container {
+                padding: 2rem;
+                margin: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .btn {
+                padding: 1rem 2rem;
+            }
+        }
+
+        /* Loading animation */
+        .btn.loading {
+            pointer-events: none;
+            background: linear-gradient(135deg, #8fbc8f 0%, #6b8e6b 100%);
+        }
+
+        .btn.loading::before {
+            content: '\f1ce'; /* spinner icon */
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Success state */
+        .form-container.success {
+            border-color: rgba(34, 139, 34, 0.5);
+        }
+
+        .form-container.success::before {
+            background: linear-gradient(90deg, #32cd32, #228b22, #32cd32, #228b22);
+        }
+
+        /* Subtle animations */
+        .form-group {
+            animation: slideInUp 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .btn { animation-delay: 0.4s; }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Texture overlay for safari feel */
+        .form-container::before {
+            background-image:
+                    linear-gradient(90deg, #8b4513, #daa520, #228b22, #a0522d),
+                    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23000" opacity="0.05"/><circle cx="75" cy="75" r="1" fill="%23000" opacity="0.05"/><circle cx="50" cy="10" r="0.5" fill="%23000" opacity="0.03"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            background-blend-mode: multiply;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{admin/fragments :: navbar}"></div>
+<div class="main-content">
+    <h1 th:text="${guide.id == null} ? 'Add New Guide' : 'Edit Guide'">Add Guide</h1>
+    <form th:action="@{/admin/guides/save}" th:object="${guide}" method="post" class="form-container">
+        <input type="hidden" th:field="*{id}" />
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" th:field="*{name}" required />
+        </div>
+        <div class="form-group">
+            <label for="contactNumber">Contact Number:</label>
+            <input type="text" id="contactNumber" th:field="*{contactNumber}" required />
+        </div>
+        <div class="form-group">
+            <label for="licenseNumber">License Number:</label>
+            <input type="text" id="licenseNumber" th:field="*{licenseNumber}" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Save Guide</button>
+    </form>
+</div>
+
+<script>
+    // Add some interactive enhancements
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('.form-container');
+        const submitBtn = document.querySelector('.btn');
+
+        // Add loading state on form submission
+        form.addEventListener('submit', function() {
+            submitBtn.classList.add('loading');
+        });
+
+        // Add focus effects
+        const inputs = document.querySelectorAll('input[type="text"]');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+    });
+</script>
+</body>
+</html>

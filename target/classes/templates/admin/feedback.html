@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Safari Feedback</title>
+    <style>
+        :root {
+            --safari-green: #2d5016;
+            --safari-light-green: #4a7c59;
+            --safari-brown: #8b4513;
+            --safari-sand: #f4e4bc;
+            --safari-gold: #daa520;
+            --earth-tone: #8b6914;
+            --wilderness-dark: #1e3a1a;
+            --nature-light: #e8f5e8;
+            --adventure-orange: #cc7722;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--nature-light) 0%, var(--safari-sand) 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                    radial-gradient(circle at 20% 80%, rgba(120, 200, 80, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(210, 180, 140, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--safari-green) 0%, var(--wilderness-dark) 100%);
+            overflow: hidden;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(45, 80, 22, 0.3);
+            position: relative;
+        }
+
+        .navbar::before {
+            content: '🌿';
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5em;
+            opacity: 0.7;
+        }
+
+        .navbar-brand {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-left: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .navbar-brand::after {
+            content: ' 🦁';
+            opacity: 0.8;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar a {
+            color: var(--safari-sand);
+            text-decoration: none;
+            padding: 10px 20px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar a:hover {
+            background: var(--safari-light-green);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(74, 124, 89, 0.4);
+        }
+
+        .logout-form button {
+            background: linear-gradient(135deg, var(--adventure-orange) 0%, #b8681e 100%);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(204, 119, 34, 0.3);
+        }
+
+        .logout-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(204, 119, 34, 0.4);
+            background: linear-gradient(135deg, #d4851f 0%, var(--adventure-orange) 100%);
+        }
+
+        .main-content {
+            padding: 40px 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--safari-green);
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        h1::before {
+            content: '🌍 ';
+            margin-right: 10px;
+        }
+
+        h1::after {
+            content: ' 🦒';
+            margin-left: 10px;
+        }
+
+        .feedback-card {
+            background: linear-gradient(145deg, #ffffff 0%, #fefefe 100%);
+            border: none;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            padding: 25px;
+            box-shadow:
+                    0 10px 30px rgba(0,0,0,0.1),
+                    0 1px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feedback-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--safari-green) 0%, var(--safari-gold) 50%, var(--safari-brown) 100%);
+        }
+
+        .feedback-card:hover {
+            transform: translateY(-5px);
+            box-shadow:
+                    0 15px 40px rgba(0,0,0,0.15),
+                    0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .feedback-header {
+            border-bottom: 2px solid var(--nature-light);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            color: var(--earth-tone);
+            background: var(--nature-light);
+            padding: 15px;
+            border-radius: 12px;
+            margin: -10px -10px 20px -10px;
+        }
+
+        .feedback-header strong {
+            color: var(--safari-green);
+        }
+
+        .rating {
+            color: var(--safari-gold);
+            font-size: 1.8em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .rating::before {
+            content: '🏆';
+            margin-right: 10px;
+            font-size: 0.8em;
+        }
+
+        .review-text {
+            margin: 20px 0;
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: var(--wilderness-dark);
+            background: var(--nature-light);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--safari-light-green);
+            position: relative;
+        }
+
+        .review-text::before {
+            content: '"';
+            font-size: 4em;
+            color: var(--safari-light-green);
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            opacity: 0.3;
+        }
+
+        .admin-reply {
+            background: linear-gradient(135deg, var(--safari-sand) 0%, #f0e6d2 100%);
+            border-left: 6px solid var(--safari-brown);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .admin-reply::before {
+            content: '🎯';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5em;
+            opacity: 0.6;
+        }
+
+        .admin-reply strong {
+            color: var(--safari-brown);
+            font-size: 1.2em;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid var(--nature-light);
+            font-family: inherit;
+            font-size: 1.1em;
+            resize: vertical;
+            transition: all 0.3s ease;
+            background: var(--nature-light);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--safari-light-green);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.1);
+        }
+
+        .reply-form {
+            background: var(--nature-light);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .reply-form button {
+            padding: 12px 25px;
+            border-radius: 25px;
+            border: none;
+            background: linear-gradient(135deg, var(--safari-light-green) 0%, var(--safari-green) 100%);
+            color: white;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 124, 89, 0.3);
+            position: relative;
+        }
+
+        .reply-form button::before {
+            content: '📝 ';
+            margin-right: 5px;
+        }
+
+        .reply-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 124, 89, 0.4);
+            background: linear-gradient(135deg, var(--safari-green) 0%, var(--wilderness-dark) 100%);
+        }
+
+        /* Wildlife decoration elements */
+        .feedback-card:nth-child(odd)::after {
+            content: '🦓';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2em;
+            opacity: 0.1;
+        }
+
+        .feedback-card:nth-child(even)::after {
+            content: '🐘';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2em;
+            opacity: 0.1;
+        }
+
+        .feedback-card:nth-child(3n)::after {
+            content: '🦏';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2em;
+            opacity: 0.1;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 20px;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .main-content {
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .feedback-card {
+                margin-bottom: 20px;
+                padding: 20px;
+            }
+        }
+
+        /* Loading animation for better UX */
+        .feedback-card {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feedback-card:nth-child(1) { animation-delay: 0.1s; }
+        .feedback-card:nth-child(2) { animation-delay: 0.2s; }
+        .feedback-card:nth-child(3) { animation-delay: 0.3s; }
+        .feedback-card:nth-child(4) { animation-delay: 0.4s; }
+        .feedback-card:nth-child(5) { animation-delay: 0.5s; }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <div class="nav-links">
+        <a class="navbar-brand" th:href="@{/admin/dashboard}">Safari Admin Panel</a>
+        <a th:href="@{/admin/bookings}">🎪 Manage Bookings</a>
+        <a th:href="@{/admin/feedback}">💬 Manage Feedback</a>
+    </div>
+    <form class="logout-form" th:action="@{/logout}" method="post">
+        <button type="submit">🚪 Logout</button>
+    </form>
+</div>
+
+<div class="main-content">
+    <h1>Safari Guest Feedback</h1>
+
+    <div th:each="fb : ${feedbackList}" class="feedback-card">
+        <div class="feedback-header">
+            <strong>🎫 Booking ID:</strong> <span th:text="${fb.booking.id}">1</span> |
+            <strong>🧳 Tourist:</strong> <span th:text="${fb.tourist.username}">tourist1</span> |
+            <strong>🌳 National Park:</strong> <span th:text="${fb.booking.nationalPark.name}">Yala</span>
+        </div>
+
+        <div>
+            <strong>Safari Experience Rating:</strong>
+            <div class="rating">
+                <span th:each="i : ${#numbers.sequence(1, fb.rating)}">⭐</span>
+            </div>
+        </div>
+
+        <div class="review-text" th:text="${fb.review}">This was an amazing safari adventure! The wildlife viewing was incredible.</div>
+
+        <div th:if="${fb.adminReply != null and !fb.adminReply.isEmpty()}" class="admin-reply">
+            <strong>🎯 Your Response:</strong>
+            <p th:text="${fb.adminReply}"></p>
+        </div>
+
+        <div th:if="${fb.adminReply == null or fb.adminReply.isEmpty()}" class="reply-form">
+            <form th:action="@{/admin/feedback/reply}" method="post">
+                <input type="hidden" name="feedbackId" th:value="${fb.id}" />
+                <textarea name="reply" placeholder="Share your response to this safari experience feedback..."></textarea>
+                <button type="submit">Send Reply</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

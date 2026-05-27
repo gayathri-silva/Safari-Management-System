@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Share Your Adventure Story - Safari Feedback</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c59 50%, #8fbc8f 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+        }
+
+        /* Safari-themed navigation bar */
+        .navbar {
+            background: linear-gradient(90deg, #1a3a0f, #2d5016);
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid #d4a574;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            color: #f4f1de;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-brand i {
+            color: #d4a574;
+            font-size: 2rem;
+        }
+
+        .nav-back {
+            color: #f4f1de;
+            text-decoration: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            border: 2px solid rgba(212, 165, 116, 0.3);
+        }
+
+        .nav-back:hover {
+            background: rgba(212, 165, 116, 0.2);
+            transform: translateY(-2px);
+            color: #d4a574;
+            border-color: #d4a574;
+        }
+
+        /* Main content */
+        .main-content {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .feedback-header {
+            background: rgba(244, 241, 222, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+            text-align: center;
+        }
+
+        .feedback-title {
+            font-size: 2.5rem;
+            color: #2d5016;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .trip-details {
+            background: linear-gradient(135deg, #d4a574, #deb887);
+            color: #2d5016;
+            padding: 1.2rem;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .feedback-subtitle {
+            color: #5d4e37;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Form container */
+        .form-container {
+            background: rgba(244, 241, 222, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            border: 1px solid rgba(212, 165, 116, 0.3);
+        }
+
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #d4a574, #8b4513, #d2691e);
+            border-radius: 20px 20px 0 0;
+        }
+
+        /* Form styling */
+        .form-group {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            color: #2d5016;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Rating select styling */
+        .rating-select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid rgba(212, 165, 116, 0.4);
+            border-radius: 15px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            color: #2d5016;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .rating-select:focus {
+            outline: none;
+            border-color: #2d5016;
+            box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .rating-select option {
+            padding: 0.5rem;
+            font-size: 1rem;
+        }
+
+        /* Custom star rating display */
+        .star-display {
+            margin-top: 0.5rem;
+            font-size: 2rem;
+            text-align: center;
+            padding: 1rem;
+            background: rgba(212, 165, 116, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(212, 165, 116, 0.2);
+        }
+
+        .stars {
+            color: #d4a574;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .rating-text {
+            font-size: 1rem;
+            color: #2d5016;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        /* Textarea styling */
+        .review-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 1.2rem;
+            border: 2px solid rgba(212, 165, 116, 0.4);
+            border-radius: 15px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            color: #2d5016;
+            font-weight: 500;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .review-textarea:focus {
+            outline: none;
+            border-color: #2d5016;
+            box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .review-textarea::placeholder {
+            color: #8b4513;
+            font-style: italic;
+        }
+
+        /* Character counter */
+        .char-counter {
+            text-align: right;
+            font-size: 0.9rem;
+            color: #8b4513;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        /* Error message styling */
+        .error-message {
+            color: #dc143c;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-weight: 500;
+            background: rgba(220, 20, 60, 0.1);
+            padding: 0.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #dc143c;
+        }
+
+        /* Submit button styling */
+        .submit-btn {
+            width: 100%;
+            padding: 1.3rem;
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #2d5016, #4a7c59, #6b8e23);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #4a7c59, #6b8e23, #8fbc8f);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(45, 80, 22, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Safari-themed decorative elements */
+        .safari-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.05;
+            background-image:
+                    radial-gradient(circle at 20% 80%, rgba(212, 165, 116, 0.3) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(139, 69, 19, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .feedback-title {
+                font-size: 2rem;
+                flex-direction: column;
+            }
+
+            .trip-details {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .form-container {
+                padding: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 0 1rem;
+            }
+
+            .feedback-header,
+            .form-container {
+                padding: 1.5rem;
+            }
+
+            .feedback-title {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Animation for page load */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .main-content > * {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .form-container {
+            animation-delay: 0.2s;
+        }
+
+        /* Loading state */
+        .loading .submit-btn {
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        .loading .submit-btn::after {
+            content: '';
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="safari-pattern"></div>
+
+<div class="navbar">
+    <a class="navbar-brand" th:href="@{/dashboard}">
+        <i class="fas fa-binoculars"></i>
+        Safari Adventures
+    </a>
+    <a class="nav-back" th:href="@{/tourist/bookings}">
+        <i class="fas fa-arrow-left"></i>
+        Back to Adventures
+    </a>
+</div>
+
+<div class="main-content">
+    <div class="feedback-header">
+        <h1 class="feedback-title">
+            <i class="fas fa-pen-fancy"></i>
+            Share Your Adventure Tale
+        </h1>
+        <p class="feedback-subtitle">
+            Help fellow explorers discover amazing experiences by sharing your safari story and rating
+        </p>
+        <div class="trip-details" th:text="'🦁 Your expedition to ' + ${booking.nationalPark.name} + ' on ' + ${#temporals.format(booking.bookingDate, 'dd-MMM-yyyy')}">
+            <i class="fas fa-map-marker-alt"></i>
+            Your expedition to Serengeti National Park on 20-Sep-2025
+        </div>
+    </div>
+
+    <div class="form-container">
+        <form th:action="@{/tourist/feedback/new}" th:object="${feedback}" method="post" id="feedbackForm">
+            <input type="hidden" th:field="*{bookingId}" />
+
+            <div class="form-group">
+                <label for="rating">
+                    <i class="fas fa-star"></i>
+                    Rate Your Safari Experience
+                </label>
+                <select id="rating" th:field="*{rating}" class="rating-select" required>
+                    <option value="">-- How was your adventure? --</option>
+                    <option value="5">⭐⭐⭐⭐⭐ Absolutely Spectacular!</option>
+                    <option value="4">⭐⭐⭐⭐☆ Fantastic Experience</option>
+                    <option value="3">⭐⭐⭐☆☆ Good Adventure</option>
+                    <option value="2">⭐⭐☆☆☆ Fair Experience</option>
+                    <option value="1">⭐☆☆☆☆ Needs Improvement</option>
+                </select>
+
+                <div class="star-display" id="starDisplay" style="display: none;">
+                    <div class="stars" id="starsShow"></div>
+                    <div class="rating-text" id="ratingText"></div>
+                </div>
+
+                <p th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}" class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </p>
+            </div>
+
+            <div class="form-group">
+                <label for="review">
+                    <i class="fas fa-book-open"></i>
+                    Tell Your Adventure Story
+                </label>
+                <textarea id="review"
+                          th:field="*{review}"
+                          class="review-textarea"
+                          required
+                          maxlength="1000"
+                          placeholder="Share the highlights of your safari adventure... What wildlife did you see? What moments took your breath away? How was your guide? What would you tell other adventurers?"></textarea>
+                <div class="char-counter">
+                    <span id="charCount">0</span> / 1000 characters
+                </div>
+                <p th:if="${#fields.hasErrors('review')}" th:errors="*{review}" class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </p>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-paper-plane"></i>
+                Share My Adventure Story
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ratingSelect = document.getElementById('rating');
+        const starDisplay = document.getElementById('starDisplay');
+        const starsShow = document.getElementById('starsShow');
+        const ratingText = document.getElementById('ratingText');
+        const reviewTextarea = document.getElementById('review');
+        const charCount = document.getElementById('charCount');
+        const form = document.getElementById('feedbackForm');
+        const submitBtn = document.querySelector('.submit-btn');
+
+        const ratingTexts = {
+            '5': 'Absolutely Spectacular!',
+            '4': 'Fantastic Experience',
+            '3': 'Good Adventure',
+            '2': 'Fair Experience',
+            '1': 'Needs Improvement'
+        };
+
+        // Rating selection handler
+        ratingSelect.addEventListener('change', function() {
+            const rating = this.value;
+
+            if (rating) {
+                starDisplay.style.display = 'block';
+
+                // Generate stars
+                let stars = '';
+                for (let i = 1; i <= 5; i++) {
+                    stars += i <= rating ? '⭐' : '☆';
+                }
+
+                starsShow.textContent = stars;
+                ratingText.textContent = ratingTexts[rating];
+
+                // Add animation
+                starDisplay.style.animation = 'none';
+                setTimeout(() => {
+                    starDisplay.style.animation = 'fadeInUp 0.5s ease forwards';
+                }, 10);
+            } else {
+                starDisplay.style.display = 'none';
+            }
+        });
+
+        // Character counter
+        reviewTextarea.addEventListener('input', function() {
+            const count = this.value.length;
+            charCount.textContent = count;
+
+            // Color coding for character limit
+            if (count > 800) {
+                charCount.style.color = '#dc143c';
+            } else if (count > 600) {
+                charCount.style.color = '#ff8c00';
+            } else {
+                charCount.style.color = '#8b4513';
+            }
+        });
+
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            // Add loading state
+            document.body.classList.add('loading');
+            submitBtn.innerHTML = '<i class="fas fa-compass fa-spin"></i> Sharing Your Story...';
+
+            // Basic validation
+            const rating = ratingSelect.value;
+            const review = reviewTextarea.value.trim();
+
+            if (!rating || !review) {
+                e.preventDefault();
+                document.body.classList.remove('loading');
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Share My Adventure Story';
+
+                if (!rating) {
+                    ratingSelect.style.borderColor = '#dc143c';
+                    ratingSelect.focus();
+                }
+                if (!review) {
+                    reviewTextarea.style.borderColor = '#dc143c';
+                    if (!rating) reviewTextarea.focus();
+                }
+                return;
+            }
+        });
+
+        // Enhanced focus effects
+        const formElements = [ratingSelect, reviewTextarea];
+        formElements.forEach(element => {
+            element.addEventListener('focus', function() {
+                this.style.transform = 'scale(1.02)';
+                this.style.transition = 'transform 0.2s ease';
+            });
+
+            element.addEventListener('blur', function() {
+                this.style.transform = 'scale(1)';
+            });
+
+            element.addEventListener('input', function() {
+                // Reset error styling
+                this.style.borderColor = 'rgba(212, 165, 116, 0.4)';
+            });
+        });
+
+        // Initialize character counter
+        const initialCount = reviewTextarea.value.length;
+        charCount.textContent = initialCount;
+
+        // Auto-resize textarea
+        reviewTextarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.max(150, this.scrollHeight) + 'px';
+        });
+    });
+</script>
+
+</body>
+</html>

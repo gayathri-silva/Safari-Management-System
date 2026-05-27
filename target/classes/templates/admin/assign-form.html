@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Assign Safari Resources</title>
+    <link rel="stylesheet" th:href="@{/css/admin-style.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --safari-forest: #2d5016;
+            --safari-green: #4a7c59;
+            --safari-earth: #8b4513;
+            --safari-sand: #deb887;
+            --safari-sunset: #cd853f;
+            --safari-cream: #faf0e6;
+            --safari-shadow: rgba(45, 80, 22, 0.1);
+            --safari-accent: #228b22;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--safari-cream) 0%, var(--safari-sand) 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Safari pattern overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                    radial-gradient(circle at 20% 80%, rgba(139, 69, 19, 0.03) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(74, 124, 89, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .main-content {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            position: relative;
+        }
+
+        /* Safari-themed header */
+        h1 {
+            background: linear-gradient(135deg, var(--safari-forest), var(--safari-green));
+            color: white;
+            padding: 2rem;
+            border-radius: 20px 20px 0 0;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 600;
+            position: relative;
+            box-shadow: 0 8px 32px var(--safari-shadow);
+            margin-bottom: 0;
+        }
+
+        h1::before {
+            content: '🦁';
+            font-size: 2.5rem;
+            position: absolute;
+            left: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        h1::after {
+            content: '🌿';
+            font-size: 2rem;
+            position: absolute;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 12px 48px var(--safari-shadow);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Safari info section */
+        .booking-info {
+            background: linear-gradient(90deg, var(--safari-cream), white);
+            padding: 2rem;
+            border-bottom: 3px solid var(--safari-sand);
+            position: relative;
+        }
+
+        .booking-info::before {
+            content: '🗺️';
+            position: absolute;
+            top: 1rem;
+            right: 2rem;
+            font-size: 2rem;
+            opacity: 0.3;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--safari-green);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .info-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .info-icon {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            color: var(--safari-green);
+            width: 2.5rem;
+            text-align: center;
+        }
+
+        .info-content strong {
+            color: var(--safari-forest);
+            font-weight: 600;
+            display: block;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-content span {
+            color: #333;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* Form styling */
+        form {
+            padding: 2.5rem;
+        }
+
+        .form-section-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+            color: var(--safari-forest);
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+        .form-section-title::before {
+            content: '🎯';
+            margin-right: 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            color: var(--safari-forest);
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+        }
+
+        .guide-icon::before {
+            content: '👨‍🏫';
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .vehicle-icon::before {
+            content: '🚗';
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 2px solid var(--safari-sand);
+            border-radius: 12px;
+            font-size: 1rem;
+            background: white;
+            color: #333;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 1rem center;
+            background-repeat: no-repeat;
+            background-size: 1rem;
+            cursor: pointer;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--safari-green);
+            box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.1);
+            background-color: var(--safari-cream);
+        }
+
+        select:hover {
+            border-color: var(--safari-green);
+        }
+
+        select option {
+            padding: 0.5rem;
+            background: white;
+            color: #333;
+        }
+
+        select option:first-child {
+            color: #999;
+            font-style: italic;
+        }
+
+        /* Safari-themed button */
+        .btn {
+            background: linear-gradient(135deg, var(--safari-green), var(--safari-accent));
+            color: white;
+            border: none;
+            padding: 1.2rem 2.5rem;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 200px;
+            margin: 2rem auto 0;
+        }
+
+        .btn::before {
+            content: '💾';
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(74, 124, 89, 0.3);
+        }
+
+        .btn:hover::after {
+            left: 100%;
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Safari decorative elements */
+        .safari-decoration {
+            position: absolute;
+            opacity: 0.1;
+            pointer-events: none;
+            font-size: 4rem;
+            color: var(--safari-green);
+        }
+
+        .decoration-1 {
+            top: 10%;
+            left: -2rem;
+            transform: rotate(-15deg);
+        }
+
+        .decoration-2 {
+            bottom: 20%;
+            right: -2rem;
+            transform: rotate(15deg);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .main-content {
+                margin: 1rem auto;
+                padding: 0 1rem;
+            }
+
+            h1 {
+                font-size: 1.4rem;
+                padding: 1.5rem;
+            }
+
+            h1::before,
+            h1::after {
+                display: none;
+            }
+
+            .form-container {
+                border-radius: 15px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            form {
+                padding: 1.5rem;
+            }
+
+            .btn {
+                width: 100%;
+                min-width: unset;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .info-item {
+                padding: 0.8rem;
+            }
+
+            .info-icon {
+                font-size: 1.2rem;
+                margin-right: 0.8rem;
+                width: 2rem;
+            }
+
+            select {
+                padding: 0.8rem 1rem;
+            }
+        }
+
+        /* Animation for page load */
+        .main-content {
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Safari paw prints decoration */
+        .paw-prints {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                    radial-gradient(circle at 15% 25%, rgba(139, 69, 19, 0.05) 2px, transparent 2px),
+                    radial-gradient(circle at 85% 75%, rgba(74, 124, 89, 0.05) 2px, transparent 2px);
+            background-size: 200px 200px;
+            pointer-events: none;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+<div class="paw-prints"></div>
+<div th:replace="~{admin/fragments :: navbar}"></div>
+
+<div class="main-content">
+    <div class="safari-decoration decoration-1">🌳</div>
+    <div class="safari-decoration decoration-2">🦌</div>
+
+    <h1>Assign Safari Resources for Booking #<span th:text="${booking.id}">1</span></h1>
+
+    <div class="form-container">
+        <div class="booking-info">
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-icon">👤</div>
+                    <div class="info-content">
+                        <strong>Tourist</strong>
+                        <span th:text="${booking.tourist.username}">John Doe</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon">🏞️</div>
+                    <div class="info-content">
+                        <strong>National Park</strong>
+                        <span th:text="${booking.nationalPark.name}">Serengeti National Park</span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon">📅</div>
+                    <div class="info-content">
+                        <strong>Safari Date</strong>
+                        <span th:text="${#temporals.format(booking.bookingDate, 'dd-MMM-yyyy')}">15-Dec-2024</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form th:action="@{/admin/bookings/assign}" method="post">
+            <input type="hidden" name="bookingId" th:value="${booking.id}" />
+
+            <div class="form-section-title">Resource Assignment</div>
+
+            <div class="form-group">
+                <label for="guideId" class="guide-icon">Select Safari Guide:</label>
+                <select id="guideId" name="guideId" required>
+                    <option value="">-- Choose a Guide --</option>
+                    <option th:each="guide : ${guides}"
+                            th:value="${guide.id}"
+                            th:text="${guide.name} + ' (License: ' + ${guide.licenseNumber} + ')'"
+                            th:selected="${booking.guide != null && booking.guide.id == guide.id}">
+                        Guide Name (License: ABC123)
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="vehicleId" class="vehicle-icon">Select Safari Vehicle:</label>
+                <select id="vehicleId" name="vehicleId" required>
+                    <option value="">-- Choose a Vehicle --</option>
+                    <option th:each="vehicle : ${vehicles}"
+                            th:value="${vehicle.id}"
+                            th:text="${vehicle.make} + ' ' + ${vehicle.model} + ' (Plate: ' + ${vehicle.licensePlate} + ')'"
+                            th:selected="${booking.vehicle != null && booking.vehicle.id == vehicle.id}">
+                        Toyota Land Cruiser (Plate: SAF-123)
+                    </option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Safari Assignment</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Reports</title>
+    <link rel="stylesheet" th:href="@{/css/admin-style.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c59 30%, #6b8e6b 70%, #8fbc8f 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Safari pattern overlay with more complexity */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                    radial-gradient(circle at 25% 85%, rgba(160, 82, 45, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 75% 15%, rgba(34, 139, 34, 0.12) 0%, transparent 50%),
+                    radial-gradient(circle at 45% 45%, rgba(218, 165, 32, 0.08) 0%, transparent 50%),
+                    radial-gradient(circle at 10% 30%, rgba(139, 69, 19, 0.1) 0%, transparent 40%),
+                    radial-gradient(circle at 90% 70%, rgba(255, 215, 0, 0.06) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Animated safari elements */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" opacity="0.03"><path d="M10,50 Q30,30 50,50 Q70,70 90,50" stroke="%23daa520" stroke-width="2" fill="none"/><circle cx="20" cy="20" r="2" fill="%23a0522d" opacity="0.3"/><circle cx="80" cy="80" r="1.5" fill="%23228b22" opacity="0.4"/></svg>');
+            pointer-events: none;
+            z-index: -1;
+            animation: safariFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes safariFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(1deg); }
+        }
+
+        .main-content {
+            padding: 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+            min-height: calc(100vh - 80px);
+        }
+
+        h1 {
+            color: #f4f1de;
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 3rem;
+            text-align: center;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        h1::before {
+            content: '\f080'; /* chart-bar icon */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: #daa520;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, rgba(244, 241, 222, 0.95) 0%, rgba(244, 241, 222, 0.85) 100%);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow:
+                    0 20px 40px rgba(0, 0, 0, 0.15),
+                    0 0 0 1px rgba(255, 255, 255, 0.1),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(139, 69, 19, 0.15);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            border-radius: 25px 25px 0 0;
+        }
+
+        /* Different colored tops for each card */
+        .stat-card:nth-child(1)::before { background: linear-gradient(90deg, #228b22, #32cd32); }
+        .stat-card:nth-child(2)::before { background: linear-gradient(90deg, #daa520, #ffd700); }
+        .stat-card:nth-child(3)::before { background: linear-gradient(90deg, #ff6b35, #f7931e); }
+        .stat-card:nth-child(4)::before { background: linear-gradient(90deg, #4169e1, #1e90ff); }
+        .stat-card:nth-child(5)::before { background: linear-gradient(90deg, #8b4513, #a0522d); }
+        .stat-card:nth-child(6)::before { background: linear-gradient(90deg, #800080, #9370db); }
+        .stat-card:nth-child(7)::before { background: linear-gradient(90deg, #dc143c, #ff6347); }
+
+        .stat-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow:
+                    0 30px 60px rgba(0, 0, 0, 0.25),
+                    0 0 0 1px rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: all 0.6s ease;
+            border-radius: 50%;
+        }
+
+        .stat-card:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .stat-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            display: block;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Different icons and colors for each stat */
+        .stat-card:nth-child(1) .stat-icon { color: #228b22; }
+        .stat-card:nth-child(1) .stat-icon::before { content: '\f0c0'; } /* users */
+
+        .stat-card:nth-child(2) .stat-icon { color: #daa520; }
+        .stat-card:nth-child(2) .stat-icon::before { content: '\f5da'; } /* clipboard-list */
+
+        .stat-card:nth-child(3) .stat-icon { color: #ff6b35; }
+        .stat-card:nth-child(3) .stat-icon::before { content: '\f017'; } /* clock */
+
+        .stat-card:nth-child(4) .stat-icon { color: #4169e1; }
+        .stat-card:nth-child(4) .stat-icon::before { content: '\f00c'; } /* check */
+
+        .stat-card:nth-child(5) .stat-icon { color: #8b4513; }
+        .stat-card:nth-child(5) .stat-icon::before { content: '\f11e'; } /* finish flag */
+
+        .stat-card:nth-child(6) .stat-icon { color: #800080; }
+        .stat-card:nth-child(6) .stat-icon::before { content: '\f406'; } /* user-tie */
+
+        .stat-card:nth-child(7) .stat-icon { color: #dc143c; }
+        .stat-card:nth-child(7) .stat-icon::before { content: '\f1b9'; } /* truck */
+
+        .stat-card h3 {
+            margin: 0 0 1.5rem 0;
+            color: #2d5016;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .stat-number {
+            font-size: 4rem;
+            font-weight: 800;
+            color: #2d5016;
+            margin: 0;
+            position: relative;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover .stat-number {
+            transform: scale(1.1);
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-subtitle {
+            font-size: 0.9rem;
+            color: #6b7c93;
+            margin-top: 0.75rem;
+            font-weight: 500;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Additional insights section */
+        .insights-section {
+            margin-top: 4rem;
+        }
+
+        .insights-title {
+            color: #f4f1de;
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .insight-card {
+            background: rgba(244, 241, 222, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(139, 69, 19, 0.2);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .insight-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .insight-icon {
+            font-size: 2.5rem;
+            color: #8b4513;
+            margin-bottom: 1rem;
+        }
+
+        .insight-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d5016;
+            margin-bottom: 0.5rem;
+        }
+
+        .insight-label {
+            color: #6b7c93;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Responsive design */
+        @media (max-width: 1200px) {
+            .report-grid {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .report-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .stat-card {
+                padding: 2rem;
+                border-radius: 20px;
+            }
+
+            .stat-number {
+                font-size: 3rem;
+            }
+
+            .stat-icon {
+                font-size: 2.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stat-card {
+                padding: 1.5rem;
+            }
+
+            .stat-number {
+                font-size: 2.5rem;
+            }
+
+            .stat-icon {
+                font-size: 2.5rem;
+            }
+        }
+
+        /* Loading animation */
+        .stat-card {
+            opacity: 0;
+            animation: cardSlideIn 0.8s ease-out forwards;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+        .stat-card:nth-child(5) { animation-delay: 0.5s; }
+        .stat-card:nth-child(6) { animation-delay: 0.6s; }
+        .stat-card:nth-child(7) { animation-delay: 0.7s; }
+
+        @keyframes cardSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Counter animation */
+        .stat-number {
+            opacity: 0;
+        }
+
+        .stat-number.animate {
+            opacity: 1;
+            animation: countUp 1.5s ease-out;
+        }
+
+        @keyframes countUp {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.7;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{admin/fragments :: navbar}"></div>
+<div class="main-content">
+    <h1>System Reports</h1>
+    <div class="report-grid">
+        <div class="stat-card">
+            <i class="stat-icon fas"></i>
+            <h3>Total Registered Tourists</h3>
+            <p class="stat-number" th:text="${totalTourists}">0</p>
+            <p class="stat-subtitle">Active safari enthusiasts</p>
+        </div>
+        <div class="stat-card">
+            <i class="stat-icon fas"></i>
+            <h3>Total Bookings</h3>
+            <p class="stat-number" th:text="${totalBookings}">0</p>
+            <p class="stat-subtitle">All-time reservations</p>
+        </div>
+        <div class="stat-card">
+            <i class="stat-icon fas"></i>
+            <h3>Pending Bookings</h3>
+            <p class="stat-number" th:text="${pendingBookings}">0</p>
+            <p class="stat-subtitle">Awaiting confirmation</p>
+        </div>
+        <div class="stat-card">
+            <i class="stat-icon fas"></i>
+            <h3>Confirmed Bookings</h3>
+            <p class="stat-number" th:text="${confirmedBookings}">0</p>
+            <p class="stat-subtitle">Ready for adventure</p>
+        </div>
+        <div class="stat-card">
+            <i class="stat-icon fas"></i>
+            <h3>Completed Bookings</h3>
+            <p class="stat-number" th:text="${completedBookings}">0</p>
+            <p class="stat-subtitle">Successful expeditions</p>
+        </div>
+        <div class="stat-card">
+            <i class="stat-icon fas"></i>
+            <h3>Total Guides</h3>
+            <p class="stat-number" th:text="${totalGuides}">0</p>
+            <p class="stat-subtitle">Expert safari professionals</p>
+        </div>
+        <div class="stat-card">
+            <i class="stat-icon fas"></i>
+            <h3>Total Vehicles</h3>
+            <p class="stat-number" th:text="${totalVehicles}">0</p>
+            <p class="stat-subtitle">Safari fleet ready</p>
+        </div>
+    </div>
+
+    <div class="insights-section">
+        <h2 class="insights-title">Quick Insights</h2>
+        <div class="insights-grid">
+            <div class="insight-card">
+                <i class="insight-icon fas fa-percentage"></i>
+                <div class="insight-value" id="confirmationRate">--</div>
+                <div class="insight-label">Confirmation Rate</div>
+            </div>
+            <div class="insight-card">
+                <i class="insight-icon fas fa-chart-line"></i>
+                <div class="insight-value" id="completionRate">--</div>
+                <div class="insight-label">Completion Rate</div>
+            </div>
+            <div class="insight-card">
+                <i class="insight-icon fas fa-users-cog"></i>
+                <div class="insight-value" id="guideUtilization">--</div>
+                <div class="insight-label">Guide Utilization</div>
+            </div>
+            <div class="insight-card">
+                <i class="insight-icon fas fa-truck"></i>
+                <div class="insight-value" id="vehicleUtilization">--</div>
+                <div class="insight-label">Fleet Utilization</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Counter animation
+        function animateNumbers() {
+            const numbers = document.querySelectorAll('.stat-number');
+
+            numbers.forEach((number, index) => {
+                setTimeout(() => {
+                    number.classList.add('animate');
+
+                    const target = parseInt(number.textContent) || 0;
+                    let current = 0;
+                    const increment = target / 50;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            current = target;
+                            clearInterval(timer);
+                        }
+                        number.textContent = Math.floor(current);
+                    }, 30);
+                }, index * 100);
+            });
+        }
+
+        // Calculate and display insights
+        function calculateInsights() {
+            const totalBookings = parseInt(document.querySelector('.stat-card:nth-child(2) .stat-number').textContent) || 0;
+            const pendingBookings = parseInt(document.querySelector('.stat-card:nth-child(3) .stat-number').textContent) || 0;
+            const confirmedBookings = parseInt(document.querySelector('.stat-card:nth-child(4) .stat-number').textContent) || 0;
+            const completedBookings = parseInt(document.querySelector('.stat-card:nth-child(5) .stat-number').textContent) || 0;
+            const totalGuides = parseInt(document.querySelector('.stat-card:nth-child(6) .stat-number').textContent) || 0;
+            const totalVehicles = parseInt(document.querySelector('.stat-card:nth-child(7) .stat-number').textContent) || 0;
+
+            // Confirmation rate
+            const confirmationRate = totalBookings > 0 ? Math.round((confirmedBookings / totalBookings) * 100) : 0;
+            document.getElementById('confirmationRate').textContent = confirmationRate + '%';
+
+            // Completion rate
+            const completionRate = confirmedBookings > 0 ? Math.round((completedBookings / confirmedBookings) * 100) : 0;
+            document.getElementById('completionRate').textContent = completionRate + '%';
+
+            // Guide utilization (assuming each guide can handle 2 bookings simultaneously)
+            const guideUtilization = totalGuides > 0 ? Math.min(Math.round((confirmedBookings / (totalGuides * 2)) * 100), 100) : 0;
+            document.getElementById('guideUtilization').textContent = guideUtilization + '%';
+
+            // Vehicle utilization (assuming each vehicle can handle 1 booking at a time)
+            const vehicleUtilization = totalVehicles > 0 ? Math.min(Math.round((confirmedBookings / totalVehicles) * 100), 100) : 0;
+            document.getElementById('vehicleUtilization').textContent = vehicleUtilization + '%';
+        }
+
+        // Enhanced hover effects
+        const statCards = document.querySelectorAll('.stat-card');
+        statCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-15px) scale(1.03)';
+                this.style.zIndex = '10';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+                this.style.zIndex = '1';
+            });
+        });
+
+        // Start animations
+        setTimeout(() => {
+            animateNumbers();
+            setTimeout(calculateInsights, 1000);
+        }, 500);
+
+        // Refresh data periodically (optional)
+        setInterval(() => {
+            calculateInsights();
+        }, 30000); // Refresh every 30 seconds
+    });
+</script>
+</body>
+</html>

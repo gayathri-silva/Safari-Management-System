@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        .navbar {
+            background: linear-gradient(90deg, #2E4A3D 0%, #1A2F23 100%);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            color: #F7F3E9;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="leaves" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23leaves)"/></svg>') repeat;
+            opacity: 0.3;
+        }
+
+        .navbar > div {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .navbar a {
+            color: #F7F3E9;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .navbar a:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar a[style*="font-size: 1.5em"] {
+            font-size: 1.8em !important;
+            font-weight: 700 !important;
+            padding-left: 0 !important;
+            padding-right: 24px !important;
+            border-right: 2px solid rgba(247, 243, 233, 0.3);
+            margin-right: 16px;
+        }
+
+        .navbar a[style*="font-size: 1.5em"]::before {
+            content: '🦁';
+            font-size: 0.8em;
+            margin-right: 12px;
+            filter: sepia(100%) saturate(150%) hue-rotate(30deg);
+        }
+
+        .navbar a[th\:href$="/profile"]::before {
+            content: '👤';
+            font-size: 1.1em;
+        }
+
+        .navbar a[th\:href$="/booking"]::before {
+            content: '🎯';
+            font-size: 1.1em;
+        }
+
+        .navbar a[th\:href$="/bookings"]::before {
+            content: '📋';
+            font-size: 1.1em;
+        }
+
+        .logout-form {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logout-form button {
+            background: linear-gradient(135deg, #DC2626, #B91C1C) !important;
+            color: white !important;
+            padding: 12px 20px !important;
+            border: none !important;
+            border-radius: 8px !important;
+            cursor: pointer !important;
+            font-size: 1em !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3) !important;
+            font-family: inherit !important;
+        }
+
+        .logout-form button::before {
+            content: '🚪';
+            font-size: 1.1em;
+        }
+
+        .logout-form button:hover {
+            background: linear-gradient(135deg, #B91C1C, #991B1B) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 12px rgba(220, 38, 38, 0.4) !important;
+        }
+
+        .logout-form button:active {
+            transform: translateY(0px) !important;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 12px 16px;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .navbar > div {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px;
+            }
+
+            .navbar a {
+                padding: 8px 12px;
+                font-size: 0.9em;
+            }
+
+            .navbar a[style*="font-size: 1.5em"] {
+                font-size: 1.4em !important;
+                padding-right: 16px !important;
+                margin-right: 8px;
+                border-right: none;
+                border-bottom: 2px solid rgba(247, 243, 233, 0.3);
+                padding-bottom: 8px;
+                margin-bottom: 8px;
+                flex-basis: 100%;
+                justify-content: center;
+            }
+
+            .logout-form button {
+                padding: 10px 16px !important;
+                font-size: 0.9em !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar a span {
+                display: none;
+            }
+
+            .navbar a::after {
+                content: attr(data-title);
+                font-size: 0.8em;
+                margin-top: 2px;
+            }
+        }
+
+        /* Add subtle animation to navbar */
+        .navbar {
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Active state for current page */
+        .navbar a.active {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hover effect enhancement */
+        .navbar a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #52C41A, #73D13D);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .navbar a:hover::after {
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+<div th:fragment="navbar" class="navbar">
+    <div>
+        <a style="font-size: 1.5em; font-weight: bold; padding-left: 0;" th:href="@{/dashboard}">Safari Trip Management</a>
+        <a th:href="@{/tourist/profile}" data-title="Profile">My Profile</a>
+        <a th:href="@{/tourist/booking}" data-title="Book">New Booking</a>
+        <a th:href="@{/tourist/bookings}" data-title="History">Booking History</a>
+    </div>
+    <form class="logout-form" th:action="@{/logout}" method="post">
+        <button type="submit" style="background-color: #d9534f; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 1em;">Logout</button>
+    </form>
+</div>
+</body>
+</html>

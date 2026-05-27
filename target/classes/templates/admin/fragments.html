@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+<div th:fragment="navbar" class="navbar">
+    <div class="nav-main">
+        <a class="navbar-brand" th:href="@{/admin/dashboard}">Admin Panel</a>
+        <div class="nav-links">
+            <a th:href="@{/admin/bookings}">Manage Bookings</a>
+            <a th:href="@{/admin/tourists}">Manage Tourists</a>
+            <a th:href="@{/admin/feedback}">Manage Feedback</a>
+            <a th:href="@{/admin/guides}">Manage Guides</a>
+            <a th:href="@{/admin/vehicles}">Manage Vehicles</a>
+            <a th:href="@{/admin/reports}">Reports</a>
+        </div>
+    </div>
+    <form class="logout-form" th:action="@{/logout}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+</div>
+</body>
+</html>
