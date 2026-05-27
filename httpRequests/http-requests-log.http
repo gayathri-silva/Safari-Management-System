@@ -1,0 +1,9 @@
+GET http://localhost:8080
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.3.5
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2025-10-01T012446.404.html
+
+###
+
