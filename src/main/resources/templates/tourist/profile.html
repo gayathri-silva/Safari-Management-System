@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common-head :: head(title='My Profile')}"></head>
+<body>
+<div th:replace="~{tourist/fragments :: navbar}"></div>
+<div class="main-content">
+    <div class="card profile-card">
+        <h1>My Profile</h1>
+        <form th:action="@{/tourist/profile}" th:object="${profile}" method="post">
+            <div class="form-group">
+                <label>Email Address:</label>
+                <input type="email" th:field="*{email}" required placeholder="your.email@example.com" />
+            </div>
+            <div class="form-group">
+                <label>Phone Number:</label>
+                <input type="text" th:field="*{phoneNumber}" required placeholder="+1 (555) 123-4567" />
+            </div>
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
