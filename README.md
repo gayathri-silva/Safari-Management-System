@@ -68,20 +68,4 @@ Through this project, I gained experience in:
 * Email notifications for bookings
 * Improved UI/UX design
 * Mobile responsive support
-
----
-
-## Author
-
-**Gayathri Silva**
-
-Cyber Security Undergraduate
-
-* GitHub: [https://github.com/gayathri-silva](https://github.com/gayathri-silva)
-* LinkedIn: [https://www.linkedin.com/in/gayathri-silva-0a7b04372](https://www.linkedin.com/in/gayathri-silva-0a7b04372)
-
----
-
-## Repository Link
-
-[https://github.com/gayathri-silva/Safari-Management-System](https://github.com/gayathri-silva/Safari-Management-System)
+ 
